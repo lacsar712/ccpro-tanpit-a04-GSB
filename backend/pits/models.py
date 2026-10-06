@@ -39,3 +39,23 @@ class LiquorSample(models.Model):
     taken_at = models.DateTimeField(auto_now_add=True)
     ph = models.FloatField()
     operator = models.CharField(max_length=64, blank=True)
+
+
+class RestTicket(models.Model):
+    """过夜簿静置票：同一坑未收回的票至多一张（数据库部分唯一索引兜底）。"""
+
+    pit = models.ForeignKey(Pit, on_delete=models.CASCADE, related_name="rest_tickets")
+    hours = models.PositiveIntegerField()
+    issued_at = models.DateTimeField(auto_now_add=True)
+    issued_by = models.CharField(max_length=64)
+    withdrawn_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(condition=models.Q(hours__gte=1), name="restticket_hours_positive"),
+            models.UniqueConstraint(
+                fields=["pit"],
+                condition=models.Q(withdrawn_at__isnull=True),
+                name="restticket_one_active_per_pit",
+            ),
+        ]
