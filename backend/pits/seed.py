@@ -19,7 +19,7 @@ def seed_demo() -> None:
         ("中-1", Pit.STATUS_DRAINED, 1, 0, 4.6),
         ("中-2", Pit.STATUS_TANNING, 1, 1, 6.1),
         ("西-1", Pit.STATUS_FILL, 2, 0, None),
-        ("西-2", Pit.STATUS_DRAINED, 2, 1, 3.8),
+        ("西-2", Pit.STATUS_TANNING, 2, 1, 3.8),
     ]
     for code, status, row, col, ph in layout:
         pit = Pit.objects.create(yard=yard, code=code, status=status, row=row, col=col)

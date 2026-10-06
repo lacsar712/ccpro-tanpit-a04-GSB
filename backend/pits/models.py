@@ -39,3 +39,23 @@ class LiquorSample(models.Model):
     taken_at = models.DateTimeField(auto_now_add=True)
     ph = models.FloatField()
     operator = models.CharField(max_length=64, blank=True)
+
+
+class RestTicket(models.Model):
+    """过夜静置票：已放液坑拨回注液的凭证。"""
+
+    pit = models.ForeignKey(Pit, on_delete=models.CASCADE, related_name="rest_tickets")
+    hours = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.CharField(max_length=64)
+    withdrawn_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(condition=models.Q(hours__gt=0), name="restticket_hours_positive"),
+            models.UniqueConstraint(
+                fields=["pit"],
+                condition=models.Q(withdrawn_at__isnull=True),
+                name="uniq_active_rest_ticket_per_pit",
+            ),
+        ]
